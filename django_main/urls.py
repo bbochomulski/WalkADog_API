@@ -18,11 +18,18 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from rest_framework.authtoken import views
-from API.views import UserViewSet, WalksViewSet
+from API.views import *
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'walks', WalksViewSet)
+router.register(r'extended_user', ExtendedUserViewSet)
+router.register(r'client', ClientViewSet)
+router.register(r'dog', DogViewSet)
+router.register(r'trainer', TrainerViewSet)
+router.register(r'trainer_review', TrainerReviewViewSet)
+router.register(r'notification', NotificationViewSet)
+router.register(r'coords', CoordsViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

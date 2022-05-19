@@ -1,6 +1,10 @@
 asgiref==3.5.1
+certifi==2020.6.20
 Django==4.0.4
 django-cors-headers==3.12.0
 djangorestframework==3.13.1
+Pillow==9.1.1
 pytz==2022.1
 sqlparse==0.4.2
+tzdata==2022.1
+wincertstore==0.2
