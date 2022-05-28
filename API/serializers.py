@@ -4,7 +4,7 @@ from django.contrib.auth.hashers import make_password
 from .models import *
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
 
     password = serializers.CharField(
         write_only=False,
@@ -15,7 +15,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ['url', 'username', 'first_name', 'last_name', 'email']
+        fields = ['id', 'username', 'password', 'first_name', 'last_name', 'email']
 
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data.get('password'))
@@ -38,14 +38,13 @@ class ExtendedUserSerializer(UserSerializer):
 class ClientSerializer(ExtendedUserSerializer):
     class Meta(ExtendedUserSerializer.Meta):
         model = Client
-        fields = ExtendedUserSerializer.Meta.fields + ['address']
+        fields = ExtendedUserSerializer.Meta.fields + ['client_id', 'address']
 
 
-class DogSerializer(serializers.HyperlinkedModelSerializer):
-    owner = ExtendedUserSerializer(read_only=True)
+class DogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dog
-        fields = ['url', 'name', 'breed', 'age', 'description', 'photo', 'owner']
+        fields = ['dog_id', 'name', 'breed', 'age', 'description', 'photo', 'owner']
 
 
 class TrainerSerializer(ExtendedUserSerializer):
@@ -59,7 +58,7 @@ class WalkSerializer(serializers.ModelSerializer):
     trainer = TrainerSerializer(read_only=True)
     class Meta:
         model = Walk
-        fields = ['url', 'dog', 'date', 'start_hour', 'end_hour', 'trainer']
+        fields = ['walk_id', 'dog', 'date', 'start_hour', 'end_hour', 'trainer']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -68,20 +67,20 @@ class WalkSerializer(serializers.ModelSerializer):
         return representation
 
 
-class TrainerReviewSerializer(serializers.HyperlinkedModelSerializer):
+class TrainerReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrainerReview
-        fields = ['url', 'trainer', 'client', 'rating', 'comment']
+        fields = ['id', 'trainer', 'client', 'rating', 'comment']
 
 
-class NotificationSerializer(serializers.HyperlinkedModelSerializer):
+class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = ['url', 'title', 'message', 'date', 'client', 'read']
+        fields = ['id', 'title', 'message', 'date', 'client', 'read']
 
 
-class CoordinatesSerializer(serializers.HyperlinkedModelSerializer):
+class CoordinatesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coordinates
-        fields = ['url', 'latitude', 'longitude', 'walk']
+        fields = ['id', 'latitude', 'longitude', 'walk']
 

@@ -25,7 +25,7 @@ class Client(ExtendedUser):
     address = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name + ' ' + self.last_name
+        return self.first_name + ' ' + self.last_name
 
 
 class Dog(models.Model):

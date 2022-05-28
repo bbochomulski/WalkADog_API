@@ -1,6 +1,9 @@
 from django.contrib.auth.models import User
+from django.urls import reverse
+from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import permissions
+from rest_framework.decorators import action
 from API.serializers import *
 
 from .models import *
@@ -22,6 +25,13 @@ class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all().order_by('-date_joined')
     serializer_class = ClientSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=True, methods=['get'])
+    def dogs(self, request, pk=None):
+        client = self.get_object()
+        dogs = Dog.objects.filter(owner=client)
+        serializer = DogSerializer(dogs, many=True)
+        return Response(serializer.data)
 
 
 class WalksViewSet(viewsets.ModelViewSet):
