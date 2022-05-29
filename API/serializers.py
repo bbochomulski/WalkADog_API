@@ -80,6 +80,14 @@ class TrainerReviewSerializer(serializers.ModelSerializer):
         model = TrainerReview
         fields = ['review_id', 'trainer', 'client', 'rating', 'comment']
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['trainer'] = TrainerSerializer(instance.trainer).data
+        representation['client'] = ClientSerializer(instance.client).data
+        del representation['trainer']['password']
+        del representation['client']['password']
+        return representation
+
 
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
