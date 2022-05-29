@@ -80,7 +80,7 @@ class TrainerViewSet(viewsets.ModelViewSet):
             }
             for review in reviews:
                 reviews_rating[str(review.rating)] += 1
-            response[trainer.id] = reviews_rating
+            response[trainer.trainer_id] = reviews_rating
 
         return Response(response)
 
