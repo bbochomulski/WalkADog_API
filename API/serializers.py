@@ -85,3 +85,8 @@ class CoordinatesSerializer(serializers.ModelSerializer):
         model = Coordinates
         fields = ['coordinates_id', 'latitude_start', 'longitude_start', 'latitude_end', 'longitude_end', 'walk']
 
+    def to_representation(self, instance):
+        representation = {'coordinates_id': instance.coordinates_id, 'walk': instance.walk.walk_id,
+                          'start': [instance.latitude_start, instance.longitude_start],
+                          'end': [instance.latitude_end, instance.longitude_end]}
+        return representation
