@@ -85,6 +85,13 @@ class NotificationViewSet(viewsets.ModelViewSet):
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    @action(detail=True, methods=['get'])
+    def set_as_read(self, request, pk=None):
+        notification = self.get_object()
+        notification.read = True
+        notification.save()
+        return Response(status=200)
+
 
 class CoordsViewSet(viewsets.ModelViewSet):
     queryset = Coordinates.objects.all()
