@@ -52,6 +52,12 @@ class DogViewSet(viewsets.ModelViewSet):
     serializer_class = DogSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Dog.objects.all()
+        else:
+            return Dog.objects.filter(owner=Client.objects.get(id=self.request.user.id).client_id)
+
 
 class TrainerViewSet(viewsets.ModelViewSet):
     queryset = Trainer.objects.all()
@@ -78,7 +84,7 @@ class TrainerReviewViewSet(viewsets.ModelViewSet):
         for trainer in trainers:
             reviews = TrainerReview.objects.filter(trainer=trainer)
             reviews_rating = {
-                'trainer_id': trainer.id,
+                'trainer_id': trainer.trainer_id,
                 '1': 0,
                 '2': 0,
                 '3': 0,
