@@ -70,6 +70,7 @@ class TrainerReview(models.Model):
     review_id = models.AutoField(primary_key=True)
     trainer = models.ForeignKey(Trainer, on_delete=models.CASCADE, null=False)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=False)
+    date = models.DateField()
     rating = models.IntegerField()
     comment = models.TextField()
 
