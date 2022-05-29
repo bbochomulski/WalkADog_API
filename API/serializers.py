@@ -80,5 +80,5 @@ class NotificationSerializer(serializers.ModelSerializer):
 class CoordinatesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coordinates
-        fields = ['id', 'latitude', 'longitude', 'walk']
+        fields = ['coordinates_id', 'latitude_start', 'longitude_start', 'latitude_end', 'longitude_end', 'walk']
 

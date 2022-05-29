@@ -97,7 +97,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     @action(detail=True, methods=['get'])
-    def set_as_read(self, request, pk=None):
+    def mark_as_read(self, request, pk=None):
         notification = self.get_object()
         notification.read = True
         notification.save()

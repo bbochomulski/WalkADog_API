@@ -60,7 +60,7 @@ class Walk(models.Model):
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.dog.name + ' - ' + self.trainer + ' - '+ self.date.strftime('%d/%m/%Y')
+        return self.dog.name + ' - ' + str(self.trainer) + ' - '+ self.date.strftime('%d/%m/%Y')
 
 
 class TrainerReview(models.Model):
@@ -82,6 +82,8 @@ class Notification(models.Model):
 
 class Coordinates(models.Model):
     coordinates_id = models.AutoField(primary_key=True)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude_start = models.FloatField()
+    longitude_start = models.FloatField()
+    latitude_end = models.FloatField()
+    longitude_end = models.FloatField()
     walk = models.ForeignKey(Walk, on_delete=models.CASCADE, null=False)
