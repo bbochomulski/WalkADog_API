@@ -44,7 +44,14 @@ class ClientSerializer(ExtendedUserSerializer):
 class DogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dog
-        fields = ['dog_id', 'name', 'breed', 'age', 'description', 'photo', 'owner']
+        fields = ['dog_id', 'name', 'breed', 'age', 'description',
+                  'behavior', 'prohibitions', 'recommendations', 'photo', 'owner']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['owner'] = ClientSerializer(instance.owner).data
+        del representation['owner']['password']
+        return representation
 
 
 class TrainerSerializer(ExtendedUserSerializer):

@@ -33,9 +33,12 @@ class Dog(models.Model):
     name = models.CharField(max_length=200)
     breed = models.CharField(max_length=200)
     age = models.IntegerField()
-    description = models.TextField()
+    description = models.TextField(default='No description')
+    behavior = models.TextField(default='No behavior')
+    prohibitions = models.TextField(default='No prohibitions')
+    recommendations = models.TextField(default='No recommendations')
     owner = models.ForeignKey(Client, on_delete=models.CASCADE, null=False)
-    photo = models.ImageField(upload_to='photos/%Y/%m/%d/')
+    photo = models.ImageField(upload_to='dog_photos')
 
     def __str__(self):
         return self.name
