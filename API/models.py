@@ -17,7 +17,7 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 class ExtendedUser(User):
     phone_number = models.CharField(max_length=20, blank=False, null=False)
-    photo = models.ImageField(upload_to='profile_photos', blank=False, null=False)
+    photo = models.ImageField(upload_to='media/profile_photos', blank=False, null=False)
 
 
 class Client(ExtendedUser):
@@ -38,7 +38,7 @@ class Dog(models.Model):
     prohibitions = models.TextField(default='No prohibitions')
     recommendations = models.TextField(default='No recommendations')
     owner = models.ForeignKey(Client, on_delete=models.CASCADE, null=False)
-    photo = models.ImageField(upload_to='dog_photos')
+    photo = models.ImageField(upload_to='media/dog_photos')
 
     def __str__(self):
         return self.name
