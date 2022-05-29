@@ -1,5 +1,4 @@
-from django.contrib.auth.models import User
-from django.urls import reverse
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import permissions
@@ -7,6 +6,20 @@ from rest_framework.decorators import action
 from API.serializers import *
 
 from .models import *
+
+
+class CustomAuthToken(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'client_id': Client.objects.get(id=user.id).client_id,
+        })
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -115,4 +128,3 @@ class CoordsViewSet(viewsets.ModelViewSet):
     queryset = Coordinates.objects.all()
     serializer_class = CoordinatesSerializer
     permission_classes = [permissions.IsAuthenticated]
-
