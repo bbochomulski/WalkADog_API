@@ -39,6 +39,13 @@ class WalksViewSet(viewsets.ModelViewSet):
     serializer_class = WalkSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    @action(detail=True, methods=['get'])
+    def resign(self, request, pk=None):
+        walk = self.get_object()
+        walk.active = False
+        walk.save()
+        return Response(status=200)
+
 
 class DogViewSet(viewsets.ModelViewSet):
     queryset = Dog.objects.all()

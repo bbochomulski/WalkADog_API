@@ -57,6 +57,7 @@ class Walk(models.Model):
     start_hour = models.TimeField()
     end_hour = models.TimeField()
     trainer = models.ForeignKey(Trainer, on_delete=models.DO_NOTHING, null=False)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.dog.name + ' - ' + self.trainer + ' - '+ self.date.strftime('%d/%m/%Y')
