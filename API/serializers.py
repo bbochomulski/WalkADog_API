@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'password', 'first_name', 'last_name', 'email']
+        fields = ['username', 'password', 'first_name', 'last_name', 'email']
 
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data.get('password'))
@@ -38,7 +38,7 @@ class ExtendedUserSerializer(UserSerializer):
 class ClientSerializer(ExtendedUserSerializer):
     class Meta(ExtendedUserSerializer.Meta):
         model = Client
-        fields = ExtendedUserSerializer.Meta.fields + ['client_id', 'address']
+        fields = ['client_id'] + ExtendedUserSerializer.Meta.fields + ['address']
 
 
 class DogSerializer(serializers.ModelSerializer):
@@ -50,7 +50,7 @@ class DogSerializer(serializers.ModelSerializer):
 class TrainerSerializer(ExtendedUserSerializer):
     class Meta(ExtendedUserSerializer.Meta):
         model = Trainer
-        fields = ExtendedUserSerializer.Meta.fields + ['date_of_birth', 'experience']
+        fields = ['trainer_id'] + ExtendedUserSerializer.Meta.fields + ['date_of_birth', 'experience']
 
 
 class WalkSerializer(serializers.ModelSerializer):
@@ -68,15 +68,17 @@ class WalkSerializer(serializers.ModelSerializer):
 
 
 class TrainerReviewSerializer(serializers.ModelSerializer):
+    trainer = TrainerSerializer()
+    client = ClientSerializer()
     class Meta:
         model = TrainerReview
-        fields = ['id', 'trainer', 'client', 'rating', 'comment']
+        fields = ['review_id', 'trainer', 'client', 'rating', 'comment']
 
 
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = ['id', 'title', 'message', 'date', 'client', 'read']
+        fields = ['notification_id', 'title', 'message', 'date', 'client', 'read']
 
 
 class CoordinatesSerializer(serializers.ModelSerializer):

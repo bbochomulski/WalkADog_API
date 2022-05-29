@@ -51,6 +51,28 @@ class TrainerViewSet(viewsets.ModelViewSet):
     serializer_class = TrainerSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    @action(detail=True, methods=['get'])
+    def reviews(self, request, pk=None):
+        trainer = self.get_object()
+        reviews = TrainerReview.objects.filter(trainer=trainer)
+        serializer = TrainerReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def reviews_rating(self, request, pk=None):
+        trainer = self.get_object()
+        reviews = TrainerReview.objects.filter(trainer=trainer)
+        rating = {
+            '1': 0,
+            '2': 0,
+            '3': 0,
+            '4': 0,
+            '5': 0
+        }
+        for review in reviews:
+            rating[str(review.rating)] += 1
+        return Response(rating)
+
 
 class TrainerReviewViewSet(viewsets.ModelViewSet):
     queryset = TrainerReview.objects.all()
@@ -68,6 +90,4 @@ class CoordsViewSet(viewsets.ModelViewSet):
     queryset = Coordinates.objects.all()
     serializer_class = CoordinatesSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-
 
