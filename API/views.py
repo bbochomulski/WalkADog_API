@@ -58,20 +58,24 @@ class TrainerViewSet(viewsets.ModelViewSet):
         serializer = TrainerReviewSerializer(reviews, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['get'])
-    def reviews_rating(self, request, pk=None):
-        trainer = self.get_object()
-        reviews = TrainerReview.objects.filter(trainer=trainer)
-        rating = {
-            '1': 0,
-            '2': 0,
-            '3': 0,
-            '4': 0,
-            '5': 0
-        }
-        for review in reviews:
-            rating[str(review.rating)] += 1
-        return Response(rating)
+    @action(detail=False, methods=['get'])
+    def reviews_rating(self, request):
+        trainers = Trainer.objects.all()
+        response = {}
+        for trainer in trainers:
+            reviews = TrainerReview.objects.filter(trainer=trainer)
+            reviews_rating = {
+                '1': 0,
+                '2': 0,
+                '3': 0,
+                '4': 0,
+                '5': 0
+            }
+            for review in reviews:
+                reviews_rating[str(review.rating)] += 1
+            response[trainer.id] = reviews_rating
+
+        return Response(response)
 
 
 class TrainerReviewViewSet(viewsets.ModelViewSet):
