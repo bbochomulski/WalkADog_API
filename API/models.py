@@ -38,7 +38,7 @@ class Dog(models.Model):
     prohibitions = models.TextField(default='No prohibitions')
     recommendations = models.TextField(default='No recommendations')
     owner = models.ForeignKey(Client, on_delete=models.CASCADE, null=False)
-    photo = models.ImageField(upload_to='dog_photos')
+    photo = models.ImageField(upload_to='dog_photos', null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -50,7 +50,7 @@ class Trainer(ExtendedUser):
     experience = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.first_name + " " + self.last_name
+        return f"{self.first_name} {self.last_name}"
 
 
 class Walk(models.Model):
@@ -63,7 +63,7 @@ class Walk(models.Model):
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.dog.name + ' - ' + str(self.trainer) + ' - '+ self.date.strftime('%d/%m/%Y')
+        return f"{self.dog.name} - {str(self.trainer)} - {self.date.strftime('%d/%m/%Y')}"
 
 
 class TrainerReview(models.Model):
@@ -73,6 +73,7 @@ class TrainerReview(models.Model):
     date = models.DateField()
     rating = models.IntegerField()
     comment = models.TextField()
+    walk_id = models.ForeignKey(Walk, on_delete=models.DO_NOTHING, default=None, null=True)
 
 
 class Notification(models.Model):

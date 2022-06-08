@@ -21,9 +21,9 @@ from API.views import *
 from django.conf.urls.static import static
 
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
+# router.register(r'users', UserViewSet)
 router.register(r'walks', WalksViewSet)
-router.register(r'extended_user', ExtendedUserViewSet)
+# router.register(r'extended_user', ExtendedUserViewSet)
 router.register(r'client', ClientViewSet)
 router.register(r'dog', DogViewSet)
 router.register(r'trainer', TrainerViewSet)
