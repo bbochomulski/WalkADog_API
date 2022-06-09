@@ -5,7 +5,14 @@ from rest_framework import permissions
 from rest_framework.decorators import action
 from API.serializers import *
 from .models import *
+import base64
+from django.core.files.base import ContentFile
 
+
+def get_image_from_base64(request_string):
+    format, imgstr = request_string.split(';base64,')
+    data = ContentFile(base64.b64decode(imgstr), name='image.' + format.split('/')[-1])
+    return data
 
 class CustomAuthToken(ObtainAuthToken):
 
@@ -32,6 +39,10 @@ class ExtendedUserViewSet(viewsets.ModelViewSet):
     queryset = ExtendedUser.objects.all().order_by('-date_joined')
     serializer_class = ExtendedUserSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        request.data['photo'] = get_image_from_base64(request.data['photo'])
+        return super().create(request, *args, **kwargs)
 
 
 class ClientViewSet(viewsets.ModelViewSet):
@@ -98,6 +109,7 @@ class DogViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         request.data['owner'] = Client.objects.get(id=self.request.user.id).client_id
+        request.data['photo'] = get_image_from_base64(request.data['photo'])
         return super().create(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
