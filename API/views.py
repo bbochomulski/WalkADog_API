@@ -197,11 +197,11 @@ class TrainerAvailabilityViewSet(viewsets.ModelViewSet):
                     end_hour = int(walk.end_hour.strftime('%H'))
                     hours = {f"{hour}:00": False for hour in range(start_hour, end_hour)}
                     available_hours.update(hours)
-
             response = {
                 'trainer_id': trainer.trainer_id,
                 'date': date,
-                'available_hours': available_hours
+                'available_hours': [hour for hour, available in available_hours.items() if available],
+                'unavailable_hours': [hour for hour, available in available_hours.items() if not available]
             }
         return Response(response)
 
