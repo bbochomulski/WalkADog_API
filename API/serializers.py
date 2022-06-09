@@ -63,7 +63,7 @@ class TrainerSerializer(ExtendedUserSerializer):
 class WalkSerializer(serializers.ModelSerializer):
     class Meta:
         model = Walk
-        fields = ['walk_id', 'dog', 'date', 'start_hour', 'end_hour', 'trainer', 'active']
+        fields = ['walk_id', 'dog', 'date', 'start_hour', 'end_hour', 'trainer', 'review', 'active']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
