@@ -192,10 +192,11 @@ class TrainerAvailabilityViewSet(viewsets.ModelViewSet):
                 available_hours.update(hours)
 
             for walk in walks:
-                start_hour = int(walk.start_hour.strftime('%H'))
-                end_hour = int(walk.end_hour.strftime('%H'))
-                hours = {f"{hour}:00": False for hour in range(start_hour, end_hour)}
-                available_hours.update(hours)
+                if walk.active:
+                    start_hour = int(walk.start_hour.strftime('%H'))
+                    end_hour = int(walk.end_hour.strftime('%H'))
+                    hours = {f"{hour}:00": False for hour in range(start_hour, end_hour)}
+                    available_hours.update(hours)
 
             response = {
                 'trainer_id': trainer.trainer_id,
