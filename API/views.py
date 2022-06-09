@@ -14,6 +14,13 @@ def get_image_from_base64(request_string):
     data = ContentFile(base64.b64decode(imgstr), name='image.' + format.split('/')[-1])
     return data
 
+def convert_to_number(string):
+    # remove all non-numeric characters
+    for char in string:
+        if char not in '0123456789.':
+            string = string.replace(char, '')
+    return float(string)
+
 
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
@@ -202,6 +209,17 @@ class CoordsViewSet(viewsets.ModelViewSet):
     queryset = Coordinates.objects.all()
     serializer_class = CoordinatesSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        walk = Walk.objects.get(walk_id=request.data['walk'])
+        for key, value in request.data.items():
+            if key != 'walk':
+                value = convert_to_number(value)
+            request.data[key] = value
+        print(request.data)
+        serializers = CoordinatesSerializer(data=request.data)
+        serializers.is_valid(raise_exception=True)
+        return super().create(request, *args, **kwargs)
 
 
 class TrainerAvailabilityViewSet(viewsets.ModelViewSet):
