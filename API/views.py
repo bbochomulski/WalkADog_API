@@ -22,11 +22,24 @@ class CustomAuthToken(ObtainAuthToken):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
-        client_id = Client.objects.filter(id=user.id)
-        return Response({
-            'token': token.key,
-            'client_id': Client.objects.get(id=user.id).client_id if len(client_id) else 0
-        })
+        client = Client.objects.filter(id=user.id)
+        trainer = Trainer.objects.filter(id=user.id)
+        response = {
+            'token': token.key
+        }
+        if len(client):
+            response.update({
+                'client_id': Client.objects.get(id=user.id).client_id if len(client) else 0
+            })
+        if len(trainer):
+            response.update({
+                'trainer_id': Trainer.objects.get(id=user.id).trainer_id if len(trainer) else 0
+            })
+        if User.objects.get(id=user.id).is_superuser:
+            response.update({
+                'admin_id': 0
+            })
+        return Response(response)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -117,6 +130,8 @@ class DogViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         dog = self.get_object()
         for key, value in serializer.validated_data.items():
+            if key == 'photo':
+                value = get_image_from_base64(value)
             setattr(dog, key, value)
         dog.save()
         return Response(DogSerializer(dog).data)
