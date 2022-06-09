@@ -47,6 +47,15 @@ class ClientViewSet(viewsets.ModelViewSet):
         serializer = DogSerializer(dogs, many=True)
         return Response(serializer.data)
 
+    def partial_update(self, request, *args, **kwargs):
+        serializer = ClientSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        client = self.get_object()
+        for key, value in serializer.validated_data.items():
+            setattr(client, key, value)
+        client.save()
+        return Response(ClientSerializer(client).data)
+
 
 class WalksViewSet(viewsets.ModelViewSet):
     queryset = Walk.objects.all().order_by('-date')
@@ -59,6 +68,15 @@ class WalksViewSet(viewsets.ModelViewSet):
         walk.active = False
         walk.save()
         return Response(status=200)
+
+    def partial_update(self, request, *args, **kwargs):
+        serializer = WalkSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        walk = self.get_object()
+        for key, value in serializer.validated_data.items():
+            setattr(walk, key, value)
+        walk.save()
+        return Response(WalkSerializer(walk).data)
 
 
 class DogViewSet(viewsets.ModelViewSet):
@@ -97,6 +115,15 @@ class TrainerViewSet(viewsets.ModelViewSet):
         reviews = TrainerReview.objects.filter(trainer=trainer)
         serializer = TrainerReviewSerializer(reviews, many=True)
         return Response(serializer.data)
+
+    def partial_update(self, request, *args, **kwargs):
+        serializer = TrainerSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        trainer = self.get_object()
+        for key, value in serializer.validated_data.items():
+            setattr(trainer, key, value)
+        trainer.save()
+        return Response(TrainerSerializer(trainer).data)
 
 
 class TrainerReviewViewSet(viewsets.ModelViewSet):
@@ -176,3 +203,12 @@ class TrainerAvailabilityViewSet(viewsets.ModelViewSet):
                 'available_hours': available_hours
             }
         return Response(response)
+
+    def partial_update(self, request, *args, **kwargs):
+        serializer = TrainerAvailabilitySerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        availability = self.get_object()
+        for key, value in serializer.validated_data.items():
+            setattr(availability, key, value)
+        availability.save()
+        return Response(TrainerAvailabilitySerializer(availability).data)
