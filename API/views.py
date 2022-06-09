@@ -64,6 +64,19 @@ class ExtendedUserViewSet(viewsets.ModelViewSet):
         request.data['photo'] = get_image_from_base64(request.data['photo'])
         return super().create(request, *args, **kwargs)
 
+    def partial_update(self, request, *args, **kwargs):
+        if 'http' in request.data['photo']:
+            del request.data['photo']
+        elif 'base64' in request.data['photo']:
+            request.data['photo'] = get_image_from_base64(request.data['photo'])
+        serializer = ExtendedUserSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        extended = self.get_object()
+        for key, value in serializer.validated_data.items():
+            setattr(extended, key, value)
+        extended.save()
+        return Response(ExtendedUserSerializer(extended).data)
+
 
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all().order_by('-date_joined')
@@ -133,12 +146,14 @@ class DogViewSet(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
+        if 'http' in request.data['photo']:
+            del request.data['photo']
+        elif 'base64' in request.data['photo']:
+            request.data['photo'] = get_image_from_base64(request.data['photo'])
         serializer = DogSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         dog = self.get_object()
         for key, value in serializer.validated_data.items():
-            if key == 'photo':
-                value = get_image_from_base64(value)
             setattr(dog, key, value)
         dog.save()
         return Response(DogSerializer(dog).data)
