@@ -30,6 +30,7 @@ router.register(r'trainer', TrainerViewSet)
 router.register(r'trainer_review', TrainerReviewViewSet)
 router.register(r'notification', NotificationViewSet)
 router.register(r'coords', CoordsViewSet)
+router.register(r'availability', TrainerAvailabilityViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

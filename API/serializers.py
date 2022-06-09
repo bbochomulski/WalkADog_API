@@ -105,3 +105,9 @@ class CoordinatesSerializer(serializers.ModelSerializer):
                           'start': [instance.latitude_start, instance.longitude_start],
                           'end': [instance.latitude_end, instance.longitude_end]}
         return representation
+
+
+class TrainerAvailabilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TrainerAvailability
+        fields = ['availability_id', 'trainer', 'date', 'start_hour', 'end_hour']

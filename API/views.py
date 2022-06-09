@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.decorators import action
 from API.serializers import *
-
+from datetime import timedelta
 from .models import *
 
 
@@ -129,3 +129,37 @@ class CoordsViewSet(viewsets.ModelViewSet):
     queryset = Coordinates.objects.all()
     serializer_class = CoordinatesSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class TrainerAvailabilityViewSet(viewsets.ModelViewSet):
+    queryset = TrainerAvailability.objects.all()
+    serializer_class = TrainerAvailabilitySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=['get'])
+    def get_availability(self, request):
+        trainer_id = request.query_params.get('trainer_id')
+        date = request.query_params.get('date')
+        if trainer_id:
+            trainer = Trainer.objects.get(trainer_id=trainer_id)
+            availability = TrainerAvailability.objects.filter(trainer=trainer, date=date)
+            walks = Walk.objects.filter(trainer=trainer, date=date).order_by('start_hour')
+            available_hours = {}
+            for availability_item in availability:
+                start_hour = int(availability_item.start_hour.strftime('%H'))
+                end_hour = int(availability_item.end_hour.strftime('%H'))
+                hours = {f"{hour}:00": True for hour in range(start_hour, end_hour)}
+                available_hours.update(hours)
+
+            for walk in walks:
+                start_hour = int(walk.start_hour.strftime('%H'))
+                end_hour = int(walk.end_hour.strftime('%H'))
+                hours = {f"{hour}:00": False for hour in range(start_hour, end_hour)}
+                available_hours.update(hours)
+
+            response = {
+                'trainer_id': trainer.trainer_id,
+                'date': date,
+                'available_hours': available_hours
+            }
+        return Response(response)

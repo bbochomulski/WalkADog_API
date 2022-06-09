@@ -92,3 +92,12 @@ class Coordinates(models.Model):
     latitude_end = models.FloatField()
     longitude_end = models.FloatField()
     walk = models.ForeignKey(Walk, on_delete=models.CASCADE, null=False)
+
+
+class TrainerAvailability(models.Model):
+    availability_id = models.AutoField(primary_key=True)
+    trainer = models.ForeignKey(Trainer, on_delete=models.CASCADE, null=False)
+    date = models.DateField()
+    start_hour = models.TimeField()
+    end_hour = models.TimeField()
+    active = models.BooleanField(default=True)
