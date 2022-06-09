@@ -4,7 +4,6 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.decorators import action
 from API.serializers import *
-from datetime import timedelta
 from .models import *
 
 
@@ -62,6 +61,13 @@ class WalksViewSet(viewsets.ModelViewSet):
     serializer_class = WalkSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Walk.objects.all()
+        else:
+            dogs_of_owner = Dog.objects.filter(owner=Client.objects.get(id=self.request.user.id).client_id)
+            return Walk.objects.filter(dog__in=dogs_of_owner)
+
     @action(detail=True, methods=['get'])
     def resign(self, request, pk=None):
         walk = self.get_object()
@@ -91,7 +97,7 @@ class DogViewSet(viewsets.ModelViewSet):
             return Dog.objects.filter(owner=Client.objects.get(id=self.request.user.id).client_id)
 
     def create(self, request, *args, **kwargs):
-        request.data['owner'] = Client.objects.get(client_id=request.data['owner']).client_id
+        request.data['owner'] = Client.objects.get(id=self.request.user.id).client_id
         return super().create(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
