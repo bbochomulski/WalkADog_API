@@ -72,6 +72,19 @@ class DogViewSet(viewsets.ModelViewSet):
         else:
             return Dog.objects.filter(owner=Client.objects.get(id=self.request.user.id).client_id)
 
+    def create(self, request, *args, **kwargs):
+        request.data['owner'] = Client.objects.get(client_id=request.data['owner']).client_id
+        return super().create(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        serializer = DogSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        dog = self.get_object()
+        for key, value in serializer.validated_data.items():
+            setattr(dog, key, value)
+        dog.save()
+        return Response(DogSerializer(dog).data)
+
 
 class TrainerViewSet(viewsets.ModelViewSet):
     queryset = Trainer.objects.all()
