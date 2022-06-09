@@ -14,8 +14,8 @@ def get_image_from_base64(request_string):
     data = ContentFile(base64.b64decode(imgstr), name='image.' + format.split('/')[-1])
     return data
 
-class CustomAuthToken(ObtainAuthToken):
 
+class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})

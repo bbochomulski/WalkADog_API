@@ -53,6 +53,15 @@ class Trainer(ExtendedUser):
         return f"{self.first_name} {self.last_name}"
 
 
+class TrainerReview(models.Model):
+    review_id = models.AutoField(primary_key=True)
+    trainer = models.ForeignKey(Trainer, on_delete=models.CASCADE, null=False)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, null=False)
+    date = models.DateField()
+    rating = models.IntegerField()
+    comment = models.TextField()
+
+
 class Walk(models.Model):
     walk_id = models.AutoField(primary_key=True)
     dog = models.ForeignKey(Dog, on_delete=models.DO_NOTHING, null=False, default=1)
@@ -61,19 +70,10 @@ class Walk(models.Model):
     end_hour = models.TimeField()
     trainer = models.ForeignKey(Trainer, on_delete=models.DO_NOTHING, null=False)
     active = models.BooleanField(default=True)
+    review = models.ForeignKey(TrainerReview, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.dog.name} - {str(self.trainer)} - {self.date.strftime('%d/%m/%Y')}"
-
-
-class TrainerReview(models.Model):
-    review_id = models.AutoField(primary_key=True)
-    trainer = models.ForeignKey(Trainer, on_delete=models.CASCADE, null=False)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, null=False)
-    date = models.DateField()
-    rating = models.IntegerField()
-    comment = models.TextField()
-    walk_id = models.ForeignKey(Walk, on_delete=models.DO_NOTHING, default=None, null=True)
 
 
 class Notification(models.Model):
