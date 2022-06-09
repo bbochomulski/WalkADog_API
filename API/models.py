@@ -101,3 +101,11 @@ class TrainerAvailability(models.Model):
     start_hour = models.TimeField()
     end_hour = models.TimeField()
     active = models.BooleanField(default=True)
+
+
+class Position(models.Model):
+    position_id = models.AutoField(primary_key=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    date = models.DateField()
+    walk = models.ForeignKey(Walk, on_delete=models.CASCADE, null=False)

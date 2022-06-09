@@ -231,3 +231,18 @@ class TrainerAvailabilityViewSet(viewsets.ModelViewSet):
             setattr(availability, key, value)
         availability.save()
         return Response(TrainerAvailabilitySerializer(availability).data)
+
+
+class PositionViewSet(viewsets.ModelViewSet):
+    queryset = Position.objects.all()
+    serializer_class = PositionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def partial_update(self, request, *args, **kwargs):
+        serializer = PositionSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        position = self.get_object()
+        for key, value in serializer.validated_data.items():
+            setattr(position, key, value)
+        position.save()
+        return Response(PositionSerializer(position).data)

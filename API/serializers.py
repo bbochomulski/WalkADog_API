@@ -111,3 +111,9 @@ class TrainerAvailabilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = TrainerAvailability
         fields = ['availability_id', 'trainer', 'date', 'start_hour', 'end_hour']
+
+
+class PositionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = ['position_id', 'latitude', 'longitude', 'date', 'walk']
