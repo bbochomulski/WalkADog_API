@@ -14,6 +14,7 @@ def get_image_from_base64(request_string):
     data = ContentFile(base64.b64decode(imgstr), name='image.' + format.split('/')[-1])
     return data
 
+
 def convert_to_number(string):
     # remove all non-numeric characters
     for char in string:
@@ -141,15 +142,17 @@ class DogViewSet(viewsets.ModelViewSet):
             return Dog.objects.filter(owner=Client.objects.get(id=self.request.user.id).client_id)
 
     def create(self, request, *args, **kwargs):
-        request.data['owner'] = Client.objects.get(id=self.request.user.id).client_id
-        request.data['photo'] = get_image_from_base64(request.data['photo'])
+        if request.data['photo'] is not None:
+            request.data['photo'] = get_image_from_base64(request.data['photo'])
+        else:
+            del request.data['photo']
         return super().create(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
-        if 'http' in request.data['photo']:
-            del request.data['photo']
-        elif 'base64' in request.data['photo']:
+        if 'base64' in request.data['photo']:
             request.data['photo'] = get_image_from_base64(request.data['photo'])
+        else:
+            del request.data['photo']
         serializer = DogSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         dog = self.get_object()
@@ -203,7 +206,6 @@ class TrainerReviewViewSet(viewsets.ModelViewSet):
             for review in reviews:
                 reviews_rating[str(review.rating)] += 1
             response.append(reviews_rating)
-
         return Response(response)
 
 
