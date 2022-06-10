@@ -239,10 +239,23 @@ class CoordsViewSet(viewsets.ModelViewSet):
             if key != 'walk':
                 value = convert_to_number(value)
             request.data[key] = value
-        print(request.data)
         serializers = CoordinatesSerializer(data=request.data)
         serializers.is_valid(raise_exception=True)
         return super().create(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        walk = Walk.objects.get(walk_id=request.data['walk'])
+        for key, value in request.data.items():
+            if key != 'walk':
+                value = convert_to_number(value)
+            request.data[key] = value
+        serializer = CoordinatesSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        coords = self.get_object()
+        for key, value in serializer.validated_data.items():
+            setattr(coords, key, value)
+        coords.save()
+        return Response(CoordinatesSerializer(coords).data)
 
 
 class TrainerAvailabilityViewSet(viewsets.ModelViewSet):
