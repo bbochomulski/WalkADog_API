@@ -56,6 +56,8 @@ class RegisterViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     def create(self, request, *args, **kwargs):
         account_type = request.data['account_type']
         data = dict(request.data)
+        if 'photo 'in data:
+            data['photo'] = get_image_from_base64(data['photo'])
         del data['account_type']
         for key, value in data.items():
             data[key] = value[0]
@@ -63,8 +65,6 @@ class RegisterViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
                 data[key] = make_password(data[key])
         if account_type == 'Klient':
             client = Client.objects.create(**data)
-            if 'photo' in data.keys():
-                client.photo = get_image_from_base64(data['photo'])
             client.save()
         elif account_type == 'Trener':
             trainer = Trainer.objects.create(**data)
