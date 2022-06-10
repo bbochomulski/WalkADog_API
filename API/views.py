@@ -60,7 +60,7 @@ class RegisterViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
             data['photo'] = get_image_from_base64(data['photo'])
         del data['account_type']
         for key, value in data.items():
-            data[key] = value[0]
+            data[key] = value
             if key == 'password':
                 data[key] = make_password(data[key])
         if account_type == 'Klient':
