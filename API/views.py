@@ -92,6 +92,12 @@ class ClientViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def partial_update(self, request, *args, **kwargs):
+        if 'http' in request.data['photo']:
+            del request.data['photo']
+        elif 'base64' in request.data['photo']:
+            request.data['photo'] = get_image_from_base64(request.data['photo'])
+        if User.objects.get(username=request.data['username']):
+            del request.data['username']
         serializer = ClientSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         client = self.get_object()
