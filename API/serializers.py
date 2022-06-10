@@ -50,7 +50,6 @@ class DogSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['owner'] = ClientSerializer(instance.owner).data
-        del representation['owner']['password']
         return representation
 
 
@@ -69,7 +68,6 @@ class WalkSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['dog'] = DogSerializer(instance.dog).data
         representation['trainer'] = TrainerSerializer(instance.trainer).data
-        del representation['trainer']['password']
         representation['start_hour'] = instance.start_hour.strftime('%H:%M')
         representation['end_hour'] = instance.end_hour.strftime('%H:%M')
         return representation
@@ -84,8 +82,6 @@ class TrainerReviewSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['trainer'] = TrainerSerializer(instance.trainer).data
         representation['client'] = ClientSerializer(instance.client).data
-        del representation['trainer']['password']
-        del representation['client']['password']
         return representation
 
 
