@@ -61,12 +61,12 @@ class RegisterViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
             data[key] = value[0]
             if key == 'password':
                 data[key] = make_password(data[key])
-        if account_type == 'client':
+        if account_type == 'Klient':
             client = Client.objects.create(**data)
             if 'photo' in data.keys():
                 client.photo = get_image_from_base64(data['photo'])
             client.save()
-        elif account_type == 'trainer':
+        elif account_type == 'Trener':
             trainer = Trainer.objects.create(**data)
             if 'photo' in data.keys():
                 trainer.photo = get_image_from_base64(data['photo'])
@@ -318,7 +318,6 @@ class TrainerAvailabilityViewSet(viewsets.ModelViewSet):
                 end_hour = int(availability_item.end_hour.strftime('%H'))
                 hours = {f"{hour}:00": True for hour in range(start_hour, end_hour)}
                 available_hours.update(hours)
-
             for walk in walks:
                 if walk.active:
                     start_hour = int(walk.start_hour.strftime('%H'))
