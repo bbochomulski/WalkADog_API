@@ -1,3 +1,4 @@
+from rest_framework import mixins
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -16,7 +17,6 @@ def get_image_from_base64(request_string):
 
 
 def convert_to_number(string):
-    # remove all non-numeric characters
     for char in string:
         if char not in '0123456789.':
             string = string.replace(char, '')
@@ -48,6 +48,47 @@ class CustomAuthToken(ObtainAuthToken):
                 'admin_id': 0
             })
         return Response(response)
+
+
+class RegisterViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        account_type = request.data['account_type']
+        data = dict(request.data)
+        del data['account_type']
+        for key, value in data.items():
+            data[key] = value[0]
+            if key == 'password':
+                data[key] = make_password(data[key])
+        if account_type == 'client':
+            client = Client.objects.create(**data)
+            if 'photo' in data.keys():
+                client.photo = get_image_from_base64(data['photo'])
+            client.save()
+        elif account_type == 'trainer':
+            trainer = Trainer.objects.create(**data)
+            if 'photo' in data.keys():
+                trainer.photo = get_image_from_base64(data['photo'])
+            trainer.save()
+        return Response(status=201)
+
+
+class ResetPasswordViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        data = dict(request.data)
+        for key, value in data.items():
+            data[key] = value[0]
+        user = User.objects.get(username=data['username'])
+        if not user:
+            return Response({"response": "User with that username does not exists."}, status=400)
+        if not user.check_password(data['old_password']):
+            return Response({"response": "Old password is incorrect."}, status=400)
+        user.set_password(data['new_password'])
+        user.save()
+        return Response(status=200)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -239,8 +280,8 @@ class CoordsViewSet(viewsets.ModelViewSet):
             if key != 'walk':
                 value = convert_to_number(value)
             request.data[key] = value
-        serializers = CoordinatesSerializer(data=request.data)
-        serializers.is_valid(raise_exception=True)
+        serializer = CoordinatesSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         return super().create(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
